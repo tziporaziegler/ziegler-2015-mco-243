@@ -1,0 +1,8 @@
+LD 16
+SWP
+LD 17
+ADD
+ST 19
+SWP
+ST 18
+STP
