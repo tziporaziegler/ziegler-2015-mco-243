@@ -1,0 +1,33 @@
+LD 64 //hello
+//hi
+DEC
+BZ 59
+//have fun
+ST 64
+LD 66
+SWP
+DaTa 255 1
+Ld 255 //you are almost done!
+ADD
+ST 255
+Ld 65
+Add
+Swp
+Ld 254
+data 66 3
+Add
+St 254
+Ld 12
+Swp
+Ld 66
+Add
+St 66
+Ld 00
+Add
+Swp
+Ld 65
+Add
+St 65
+Br 00
+STP
+data 64 15

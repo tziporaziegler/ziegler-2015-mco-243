@@ -14,15 +14,17 @@ public class Compiler {
 
 		int i = 0;
 		boolean add;
-		while (scanner.hasNext()) {
+		while (scanner.hasNext() && i < 256) {
 			add = true;
 			String instruction = scanner.next().toUpperCase();
 			switch (instruction) {
 				case "LD":
 					memory[i] = '0';
+					i = addLocation(scanner, i, instruction);
 					break;
 				case "ST":
 					memory[i] = '1';
+					i = addLocation(scanner, i, instruction);
 					break;
 				case "SWP":
 					memory[i] = '2';
@@ -38,18 +40,20 @@ public class Compiler {
 					break;
 				case "BZ":
 					memory[i] = '6';
+					i = addLocation(scanner, i, instruction);
 					break;
 				case "BR":
 					memory[i] = '7';
+					i = addLocation(scanner, i, instruction);
 					break;
 				case "STP":
 					memory[i] = '8';
 					break;
 				case "DATA":
-					//String location = scanner.next();
-					//String value = scanner.next();
-					//int loc = location.toBinary();
-					//memory[loc] = value;
+					int location = scanner.nextInt();
+					char value = Integer.toHexString(scanner.nextInt()).toUpperCase().charAt(0);
+					memory[location] = value;
+					add = false;
 					break;
 				default:
 					add = false;
@@ -72,20 +76,6 @@ public class Compiler {
 					}
 			}
 
-			// if two letter - then number following
-			// if three letters - then just action
-			if (instruction.length() == 2) {
-				String hex = Integer.toHexString(scanner.nextInt()).toUpperCase();
-				if (hex.length() > 1) {
-					memory[++i] = hex.charAt(0);
-					memory[++i] = hex.charAt(1);
-				}
-				else {
-					memory[++i] = '0';
-					memory[++i] = hex.charAt(0);
-				}
-			}
-
 			if (scanner.hasNextLine()) {
 				scanner.nextLine();
 			}
@@ -96,6 +86,21 @@ public class Compiler {
 		}
 
 		scanner.close();
+	}
+
+	private int addLocation(Scanner scanner, int i, String instruction) {
+		if (instruction.length() == 2) {
+			String hex = Integer.toHexString(scanner.nextInt()).toUpperCase();
+			if (hex.length() > 1) {
+				memory[++i] = hex.charAt(0);
+				memory[++i] = hex.charAt(1);
+			}
+			else {
+				memory[++i] = '0';
+				memory[++i] = hex.charAt(0);
+			}
+		}
+		return i;
 	}
 
 	public String toString() {
@@ -114,9 +119,9 @@ public class Compiler {
 
 	public static void main(String[] args) {
 		try {
-			Compiler compiler = new Compiler("compileInstructions");
+			Compiler compiler = new Compiler("compileData");
 			System.out.println(compiler.toString());
-			Compiler compiler2 = new Compiler("compileInstructions2");
+			Compiler compiler2 = new Compiler("compileData2");
 			System.out.println(compiler2.toString());
 		}
 		catch (FileNotFoundException e) {
