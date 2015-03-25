@@ -1,4 +1,4 @@
-package ziegler.threads;
+package concurrent;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
