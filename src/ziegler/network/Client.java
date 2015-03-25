@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.apache.commons.io.IOUtils;
+
 public class Client {
 
 	public static void main(String args[]) {
@@ -32,21 +34,7 @@ public class Client {
 		}
 		// will always execute exception no matter if works or catches exception
 		finally {
-			// do finally instead of doing socket.close both in try and catch
-			try {
-				// Operating System is managing your socket. When ends, will eventually clean up -
-				// but till then, OS doesn't know what to do...so have resource leak until close
-				// socket.
-				socket.close();
-				// this exception doesn't really do anything because already
-				// close and now don't care if throws exception
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			// instead of above thousand lines, can just use Apache library and
-			// do IOUtils.closeQuietly(socket);
+			IOUtils.closeQuietly(socket);
 		}
 	}
 }

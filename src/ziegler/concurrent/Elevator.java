@@ -1,4 +1,4 @@
-package concurrent;
+package ziegler.concurrent;
 
 public class Elevator {
 	private int currentFloor;
