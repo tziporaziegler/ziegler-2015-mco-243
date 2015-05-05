@@ -12,15 +12,19 @@ public class PrioritySA extends SchedulerAlgorithm {
 	public FakeProcess getNextProcess(List<FakeProcess> list) {
 		FakeProcess next = list.get(0);
 		int nextPriority = next.getPriority();
-		for(FakeProcess process: list){
-			int processPriority = process.getPriority();
-			if(processPriority < nextPriority){
-				next = process;
-				nextPriority = processPriority;
+		if (nextPriority != 0) {
+			for (FakeProcess process : list) {
+				int processPriority = process.getPriority();
+				if (processPriority == 0) {
+					break;
+				}
+				if (processPriority < nextPriority) {
+					next = process;
+					nextPriority = processPriority;
+				}
 			}
 		}
 		return next;
 	}
-
 
 }
