@@ -1,15 +1,10 @@
 package ziegler.os.scheduler;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 public class FakeProcess {
 	private boolean running;
 	private int timeToCompletion;
-	
+
 	private int priority;
-	private ScheduledExecutorService executor;
 	private int amtTime;
 
 	public FakeProcess(int priority, int timeToCompletion, boolean pri) {
@@ -18,15 +13,14 @@ public class FakeProcess {
 		amtTime = 0;
 
 		if (pri && priority > 0) {
-			executor = Executors.newScheduledThreadPool(1);
-			executor.scheduleAtFixedRate(timerRun, 0, 20, TimeUnit.MILLISECONDS);
+			timerRun.start();
 		}
 	}
 
 	public void run(int quantum) {
 		amtTime = 0;
 		running = true;
-		
+
 		while (timeToCompletion > 0 && quantum > 0) {
 			timeToCompletion--;
 			quantum--;
@@ -54,16 +48,24 @@ public class FakeProcess {
 		return priority;
 	}
 
-	private Runnable timerRun = new Runnable() {
+	private Thread timerRun = new Thread() {
 		@Override
 		public void run() {
-			amtTime++;
-			if (amtTime == 50) {
-				amtTime = 0;
-				priority--;
-			}
-			if (priority == 0) {
-				executor.shutdown();
+			while (true) {
+				amtTime++;
+				if (amtTime == 100) {
+					amtTime = 0;
+					priority--;
+				}
+				if (priority == 0) {
+					break;
+				}
+				try {
+					sleep(1);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};

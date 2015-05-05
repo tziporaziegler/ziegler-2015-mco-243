@@ -1,19 +1,21 @@
 package ziegler.os.scheduler;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
 public abstract class SchedulerAlgorithm {
 	protected List<FakeProcess> processList;
-	protected Comparator<FakeProcess> comparator;
 	private Random random;
 
-	public SchedulerAlgorithm(int seed, boolean pri) {
+	public SchedulerAlgorithm(boolean pri) {
 		processList = new ArrayList<FakeProcess>();
-		random = new Random(seed);
-		
+
+		// start all random at same seed number for testing purposes
+		// want separate Randoms since want to restart from the beginning
+		// create new List in each SA instead of sending in same ArrayList Object to all the SAs and making a copy of the List's contents
+		random = new Random(675);
+
 		for (int i = 0; i < 100; i++) {
 			int priority = random.nextInt(10);
 			int timeToCompletion = random.nextInt(30);
@@ -23,13 +25,7 @@ public abstract class SchedulerAlgorithm {
 	}
 
 	// returns next process on list
-	public FakeProcess getNextProcess(List<FakeProcess> list) {
-		return processList.get(0);
-	}
-
-	public void sort() {
-		processList.sort(comparator);
-	}
+	public abstract FakeProcess getNextProcess(List<FakeProcess> list);
 
 	public List<FakeProcess> getList() {
 		return processList;

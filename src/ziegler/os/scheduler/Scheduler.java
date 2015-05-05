@@ -20,7 +20,6 @@ public class Scheduler {
 
 			if (process.isStillRunning()) {
 				list.add(process);
-				algorithm.sort();
 			}
 		}
 	}

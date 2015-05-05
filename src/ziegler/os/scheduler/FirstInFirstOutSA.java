@@ -1,14 +1,16 @@
 package ziegler.os.scheduler;
 
+import java.util.List;
+
 public class FirstInFirstOutSA extends SchedulerAlgorithm {
 
-	public FirstInFirstOutSA(int seed) {
-		super(seed, false);
+	public FirstInFirstOutSA() {
+		super(false);
 	}
 
 	@Override
-	public void sort() {
-
+	public FakeProcess getNextProcess(List<FakeProcess> list) {
+		return list.get(0);
 	}
 
 }
