@@ -5,7 +5,7 @@ import java.util.Random;
 public class MainMemory {
 	private int totalBytes;
 	private int totalFree;
-	private int[][] memory;
+	private char[][] memory;
 	private int numRows;
 
 	private final static int BYTESPERROW = 128;
@@ -14,8 +14,18 @@ public class MainMemory {
 		this.numRows = numRows;
 		totalBytes = numRows * BYTESPERROW; // ensure that is divisible by 128
 		totalFree = totalBytes;
-		memory = new int[numRows][BYTESPERROW];
+		memory = new char[numRows][BYTESPERROW];
+		clear();
 		randomPopulate();
+	}
+
+	// set all values to '-'
+	private void clear() {
+		for (int i = 0; i < memory.length; i++) {
+			for (int j = 0; j < memory[0].length; j++) {
+				memory[i][j] = '-';
+			}
+		}
 	}
 
 	// randomly place values in 1/4 of all memory for testing purposes
@@ -23,20 +33,21 @@ public class MainMemory {
 		Random random = new Random();
 		int i = 0;
 		while (i < totalBytes / 4) {
-			memory[random.nextInt(numRows)][random.nextInt(BYTESPERROW)] = random.nextInt(10);
+			char next = Character.forDigit(random.nextInt(10), 10);
+			memory[random.nextInt(numRows)][random.nextInt(BYTESPERROW)] = next;
 			i++;
 		}
 	}
 
 	// processID is know as pid in UNIX
-	public boolean allocated(int pid, int numBytes) {
+	public boolean allocate(char pid, int numBytes) {
 		if (numBytes > totalFree) {
 			return false;
 		}
 
 		for (int i = 0; i < memory.length; i++) {
 			for (int j = 0; j < memory[0].length && numBytes > 0; j++) {
-				if (memory[i][j] == 0) {
+				if (memory[i][j] == '-') {
 					memory[i][j] = pid;
 					numBytes--;
 					totalFree--;
@@ -46,11 +57,11 @@ public class MainMemory {
 		return true;
 	}
 
-	public void free(int pid) {
+	public void free(char pid) {
 		for (int i = 0; i < memory.length; i++) {
 			for (int j = 0; j < memory[0].length; j++) {
 				if (memory[i][j] == pid) {
-					memory[i][j] = 0;
+					memory[i][j] = '-';
 					totalFree++;
 				}
 			}
@@ -60,29 +71,33 @@ public class MainMemory {
 	public void print() {
 		for (int i = 0; i < memory.length; i++) {
 			for (int j = 0; j < memory[0].length; j++) {
-				int next = memory[i][j];
-				if (next == 0) {
-					System.out.print('-');
-				}
-				else {
-					System.out.print(next);
-				}
+				System.out.print(memory[i][j]);
 			}
 			System.out.println();
 		}
 	}
 
 	public void defragment() {
-		for (int pid = 1; pid <= 9; pid++) {
+		// each place in the array can be 0-9 process or 10 if '-'
+		for (int pid = 0; pid <= 10; pid++) {
+
+			// look through the array until find first instance of a value greater than the current pid
 			for (int i = 0; i < memory.length; i++) {
 				for (int j = 0; j < memory[0].length; j++) {
-					int next = memory[i][j];
-					if (next > pid) {
+					if (getValue(memory[i][j]) > pid) {
+
 						boolean found = false;
-						for (int k = 0; k < memory.length && !found; k++) {
-							for (int l = 0; l < memory[0].length && !found; l++) {
-								if (memory[k][l] == pid || memory[k][l] == 0) {
-									swap(i, j, k, l);
+
+						// loop through the array until find a value equal to the pid
+						for (int k = memory.length - 1; k >= 0 && !found; k--) {
+							for (int l = memory[0].length - 1; l >= 0 && !found; l--) {
+								if (getValue(memory[k][l]) == pid) {
+
+									// swap
+									char temp = memory[i][j];
+									memory[i][j] = memory[k][l];
+									memory[k][l] = temp;
+
 									found = true;
 								}
 							}
@@ -93,34 +108,41 @@ public class MainMemory {
 		}
 	}
 
-	private void swap(int i, int j, int k, int l) {
-		int temp = memory[i][j];
-		memory[i][j] = memory[k][l];
-		memory[k][l] = temp;
+	public int getValue(char next) {
+		if (next == '-') {
+			return 10;
+		}
+		return Character.getNumericValue(next);
 	}
 
 	public static void main(String[] args) {
 		MainMemory memory = new MainMemory(10);
+		System.out.println("randomly fill:");
 		memory.print();
 
-		memory.allocated(1, 34);
+		memory.allocate('1', 34);
 		System.out.println();
+		System.out.println("add 1:");
 		memory.print();
 
-		memory.allocated(2, 55);
+		memory.allocate('2', 55);
 		System.out.println();
+		System.out.println("add 2:");
 		memory.print();
 
-		memory.free(5);
+		memory.free('5');
 		System.out.println();
+		System.out.println("free 5:");
 		memory.print();
 
-		memory.allocated(1, 45);
+		memory.allocate('1', 45);
 		System.out.println();
+		System.out.println("add 1:");
 		memory.print();
 
 		memory.defragment();
 		System.out.println();
+		System.out.println("defragment:");
 		memory.print();
 	}
 }
