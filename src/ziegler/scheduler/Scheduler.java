@@ -1,4 +1,4 @@
-package ziegler.os.scheduler;
+package ziegler.scheduler;
 
 import java.util.List;
 
